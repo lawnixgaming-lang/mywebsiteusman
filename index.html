@@ -4,27 +4,29 @@
 <meta charset="UTF-8">
 <title>Ashraff Usman | Portfolio</title>
 <style>
-  body, html { margin:0; padding:0; height:100%; font-family:Arial,sans-serif; overflow:hidden; background:black; color:#0ff;}
-  nav { position:fixed; width:100%; top:0; left:0; background: rgba(0,0,0,0.7); padding:10px 20px; display:flex; justify-content:space-between; z-index:100; }
+  html, body { margin:0; padding:0; font-family:Arial,sans-serif; color:#0ff; }
+  canvas { position:absolute; top:0; left:0; z-index:0; display:block; }
+  nav { position:fixed; width:100%; top:0; left:0; background: rgba(0,0,0,0.7); padding:10px 20px; display:flex; justify-content:space-between; z-index:10; }
   nav a { color:#0ff; text-decoration:none; margin:0 15px; font-weight:bold; }
   nav a:hover { color:#fff; }
-  header { position:relative; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; z-index:10;}
-  header h1 { font-size:50px; text-shadow:0 0 15px #0ff,0 0 30px #0ff;}
-  header h3 { font-size:20px; text-shadow:0 0 10px #0ff;}
-  header p { font-size:18px; text-shadow:0 0 8px #0ff;}
-  header img { width:150px; height:150px; border-radius:50%; border:3px solid #0ff; box-shadow:0 0 20px #0ff; }
-  section { padding:80px 20px; text-align:center; position:relative; z-index:10;}
-  section h2 { font-size:36px; text-shadow:0 0 15px #0ff,0 0 25px #0ff;}
-  section p { max-width:800px; margin:0 auto 30px; font-size:18px; }
-  .projects { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; }
-  .project-card { background: rgba(0,0,0,0.8); padding:20px; width:250px; border-radius:15px; text-align:center; box-shadow:0 0 25px #0ff; transition: transform 0.3s, box-shadow 0.3s; }
-  .project-card:hover { transform: translateY(-10px); box-shadow:0 0 50px #0ff; }
-  .project-card img { width:100%; height:150px; object-fit:cover; border-radius:10px; margin-bottom:10px; border:2px solid #0ff; }
-  .contact a { color:#0ff; text-decoration:none; font-weight:bold; display:block; margin:10px 0; }
-  canvas { position:absolute; top:0; left:0; width:100%; height:100%; z-index:0; display:block;}
+  header, section { position:relative; z-index:1; text-align:center; padding:60px 20px; min-height:auto; }
+  header h1 { font-size:40px; text-shadow:0 0 15px #0ff,0 0 30px #0ff; margin-bottom:10px;}
+  header h3 { font-size:18px; text-shadow:0 0 10px #0ff; margin-bottom:15px;}
+  header p { font-size:16px; text-shadow:0 0 8px #0ff; margin-bottom:15px;}
+  header img { width:120px; height:120px; border-radius:50%; border:3px solid #0ff; box-shadow:0 0 20px #0ff;}
+  section h2 { font-size:32px; text-shadow:0 0 15px #0ff,0 0 25px #0ff; margin-bottom:15px; }
+  section p { max-width:700px; margin:0 auto 20px; font-size:16px; }
+  .projects { display:flex; flex-wrap:wrap; justify-content:center; gap:15px; }
+  .project-card { background: rgba(0,0,0,0.8); padding:15px; width:220px; border-radius:15px; text-align:center; box-shadow:0 0 20px #0ff; transition: transform 0.3s, box-shadow 0.3s; }
+  .project-card:hover { transform: translateY(-5px); box-shadow:0 0 40px #0ff; }
+  .project-card img { width:100%; height:130px; object-fit:cover; border-radius:10px; margin-bottom:8px; border:2px solid #0ff; }
+  .contact a { color:#0ff; text-decoration:none; font-weight:bold; display:block; margin:8px 0; }
+  .contact a:hover { color:#fff; }
 </style>
 </head>
 <body>
+
+<canvas id="bg"></canvas>
 
 <nav>
   <div>Ashraff Usman</div>
@@ -72,33 +74,34 @@
   </div>
 </section>
 
-<!-- Three.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 <script>
+// 3D background
 let scene = new THREE.Scene();
-let camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 2000);
+let camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 3000);
 camera.position.z = 500;
 
-let renderer = new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+let renderer = new THREE.WebGLRenderer({canvas:document.getElementById('bg'), antialias:true});
+renderer.setSize(window.innerWidth, document.body.scrollHeight);
 
-// Particles
-let particles = new THREE.Group();
-scene.add(particles);
-for(let i=0;i<500;i++){
-  let geometry = new THREE.SphereGeometry(2,8,8);
+let particles = [];
+let particleCount = 1000;
+for(let i=0;i<particleCount;i++){
+  let geometry = new THREE.SphereGeometry(1.5,8,8);
   let material = new THREE.MeshBasicMaterial({color:0x00ffff});
-  let sphere = new THREE.Mesh(geometry,material);
-  sphere.position.set(Math.random()*2000-1000, Math.random()*2000-1000, Math.random()*2000-1000);
-  particles.add(sphere);
+  let sphere = new THREE.Mesh(geometry, material);
+  sphere.position.set(Math.random()*2000-1000, Math.random()*document.body.scrollHeight-500, Math.random()*2000-1000);
+  scene.add(sphere);
+  particles.push(sphere);
 }
 
 function animate(){
   requestAnimationFrame(animate);
-  particles.rotation.y += 0.001;
-  particles.rotation.x += 0.0005;
-  renderer.render(scene,camera);
+  particles.forEach(p=>{
+    p.position.z += 2;
+    if(p.position.z > 1000) p.position.z = -1000;
+  });
+  renderer.render(scene, camera);
 }
 
 animate();
@@ -106,7 +109,7 @@ animate();
 window.addEventListener('resize', ()=>{
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(window.innerWidth, document.body.scrollHeight);
 });
 </script>
 
