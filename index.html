@@ -4,24 +4,27 @@
 <meta charset="UTF-8">
 <title>Ashraff Usman | Portfolio</title>
 <style>
-  body, html { margin:0; padding:0; height:100%; font-family: 'Arial', sans-serif; color:#0ff; background:black; overflow-x:hidden; }
-  nav { position: fixed; width:100%; top:0; left:0; background: rgba(0,0,0,0.7); padding: 10px 20px; display:flex; justify-content:space-between; z-index:100; }
-  nav a { color:#0ff; text-decoration:none; margin:0 15px; font-weight:bold; transition: 0.3s; }
-  nav a:hover { color:#fff; }
-  header { height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; position:relative; overflow:hidden; }
-  header h1 { font-size:50px; margin:10px 0; text-shadow: 0 0 15px #0ff, 0 0 30px #0ff; }
-  header h3 { font-size:20px; margin-bottom:20px; text-shadow:0 0 10px #0ff; }
-  header p { font-size:18px; margin-bottom:30px; text-shadow:0 0 8px #0ff; }
-  section { padding:80px 20px; text-align:center; position:relative; z-index:10; }
-  section h2 { font-size:36px; margin-bottom:20px; text-shadow:0 0 15px #0ff, 0 0 25px #0ff; }
-  section p { max-width:800px; margin:0 auto 30px; font-size:18px; }
-  .projects { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; }
-  .project-card { background: rgba(0,0,0,0.8); padding:20px; width:250px; border-radius:15px; text-align:center; box-shadow:0 0 25px #0ff; transition: transform 0.3s, box-shadow 0.3s; }
-  .project-card:hover { transform: translateY(-10px); box-shadow:0 0 40px #0ff; }
-  .project-card img { width:100%; height:150px; object-fit:cover; border-radius:10px; margin-bottom:10px; border:2px solid #0ff; }
-  .contact a { color:#0ff; text-decoration:none; font-weight:bold; display:block; margin:10px 0; transition:0.3s; }
-  .contact a:hover { color:#fff; }
-  canvas#bgCanvas { position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1; display:block; }
+body, html { margin:0; padding:0; height:100%; font-family:'Arial', sans-serif; color:#0ff; background:black; overflow:hidden; }
+nav { position: fixed; width:100%; top:0; left:0; background: rgba(0,0,0,0.7); padding: 10px 20px; display:flex; justify-content:space-between; z-index:100; transition: 0.3s; }
+nav a { color:#0ff; text-decoration:none; margin:0 15px; font-weight:bold; text-shadow:0 0 5px #0ff; transition:0.3s; }
+nav a:hover { color:#fff; text-shadow:0 0 15px #0ff,0 0 30px #0ff,0 0 50px #0ff; transform:scale(1.1); }
+header { height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; position:relative; }
+header h1 { font-size:50px; margin:10px 0; text-shadow:0 0 15px #0ff,0 0 30px #0ff,0 0 50px #0ff; transition:0.3s; }
+header h3 { font-size:20px; margin-bottom:20px; text-shadow:0 0 10px #0ff; }
+header p { font-size:18px; margin-bottom:30px; text-shadow:0 0 8px #0ff; }
+header img { transition:0.3s; }
+header img:hover { box-shadow:0 0 50px #0ff,0 0 80px #0ff,0 0 120px #0ff; transform:scale(1.1); }
+section { padding:80px 20px; text-align:center; position:relative; z-index:10; }
+section h2 { font-size:36px; margin-bottom:20px; text-shadow:0 0 15px #0ff,0 0 25px #0ff,0 0 40px #0ff; }
+section p { max-width:800px; margin:0 auto 30px; font-size:18px; }
+.projects { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; }
+.project-card { background: rgba(0,0,0,0.8); padding:20px; width:250px; border-radius:15px; text-align:center; box-shadow:0 0 25px #0ff; transition: transform 0.3s, box-shadow 0.3s, text-shadow 0.3s; }
+.project-card:hover { transform: translateY(-10px); box-shadow:0 0 50px #0ff,0 0 100px #0ff,0 0 150px #0ff; text-shadow:0 0 15px #0ff; }
+.project-card img { width:100%; height:150px; object-fit:cover; border-radius:10px; margin-bottom:10px; border:2px solid #0ff; transition:0.3s; }
+.project-card img:hover { transform:scale(1.05); box-shadow:0 0 40px #0ff,0 0 80px #0ff; }
+.contact a { color:#0ff; text-decoration:none; font-weight:bold; display:block; margin:10px 0; text-shadow:0 0 5px #0ff; transition:0.3s; }
+.contact a:hover { color:#fff; text-shadow:0 0 15px #0ff,0 0 30px #0ff,0 0 50px #0ff; transform:scale(1.05); }
+canvas#bgCanvas { position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1; display:block; }
 </style>
 </head>
 <body>
@@ -79,50 +82,63 @@
 </section>
 
 <script>
-// 3D grid + particles background
+// Ultimate 3D cyber grid with perspective lines and interactivity
 const canvas = document.getElementById('bgCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const gridSpacing = 50;
-const particles = [];
-const particleCount = 120;
-for(let i=0;i<particleCount;i++){
-  particles.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, z:Math.random()*2+1, r:Math.random()*2+1});
+const width = canvas.width;
+const height = canvas.height;
+const fov = 400;
+const speed = 1.5;
+const points = [];
+const linesDistance = 120;
+const mouse = {x:0, y:0};
+
+for(let i=0;i<400;i++){
+  points.push({
+    x: (Math.random()-0.5)*width*2,
+    y: (Math.random()-0.5)*height*2,
+    z: Math.random()*1000
+  });
 }
 
-let offsetZ = 0;
+function project(p){
+  const scale = fov / (fov + p.z);
+  return {x: p.x*scale + width/2 + mouse.x*0.1, y: p.y*scale + height/2 + mouse.y*0.1, scale: scale};
+}
 
 function draw(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = 'black';
+  ctx.fillRect(0,0,width,height);
 
-  // Draw grid
+  // Draw lines
   ctx.strokeStyle='cyan';
-  ctx.lineWidth=1;
-  for(let y=0;y<canvas.height;y+=gridSpacing){
-    ctx.beginPath();
-    ctx.moveTo(0,y+offsetZ);
-    ctx.lineTo(canvas.width,y+offsetZ);
-    ctx.stroke();
-  }
-  for(let x=0;x<canvas.width;x+=gridSpacing){
-    ctx.beginPath();
-    ctx.moveTo(x,0);
-    ctx.lineTo(x,canvas.height);
-    ctx.stroke();
-  }
-  offsetZ+=0.5;
-  if(offsetZ>gridSpacing) offsetZ=0;
+  points.forEach((p, i)=>{
+    p.z -= speed;
+    if(p.z < 1) p.z = 1000;
 
-  // Draw particles
-  ctx.fillStyle='cyan';
-  particles.forEach(p=>{
+    const a = project(p);
+    for(let j=i+1;j<points.length;j++){
+      const p2 = points[j];
+      if(Math.abs(p.x - p2.x)<linesDistance && Math.abs(p.y - p2.y)<linesDistance && Math.abs(p.z - p2.z)<linesDistance){
+        const b = project(p2);
+        ctx.beginPath();
+        ctx.moveTo(a.x,a.y);
+        ctx.lineTo(b.x,b.y);
+        ctx.stroke();
+      }
+    }
+  });
+
+  // Draw points
+  points.forEach(p=>{
+    const proj = project(p);
     ctx.beginPath();
-    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.arc(proj.x, proj.y, 2*proj.scale, 0, Math.PI*2);
+    ctx.fillStyle='cyan';
     ctx.fill();
-    p.y -= 0.5*p.z;
-    if(p.y<0) p.y=canvas.height;
   });
 
   requestAnimationFrame(draw);
@@ -130,7 +146,12 @@ function draw(){
 
 draw();
 
-window.addEventListener('resize',()=>{
+window.addEventListener('mousemove', e=>{
+  mouse.x = (e.clientX - width/2);
+  mouse.y = (e.clientY - height/2);
+});
+
+window.addEventListener('resize', ()=>{
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 });
